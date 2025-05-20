@@ -27,6 +27,7 @@ export default function CustomerDetailPage() {
   const { id } = useParams();
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [showVehicleForm, setShowVehicleForm] = useState(false);
+  const [vin, setVin] = useState("");
   const [vehicle, setVehicle] = useState<Vehicle>({
     vin: "",
     make: "",
@@ -47,26 +48,64 @@ export default function CustomerDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const handleVinLookupSubmit = async () => {
+    if (!vin) return;
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${vin}?format=json`)
+      const vehicleResponse = response.data.Results.reduce(
+        (obj, item) => { 
+          if (item.Variable && item.Value) {
+            obj[item.Variable.toLowerCase()] = item.Value;
+          }
+          return obj;
+        }, {});
+      const vehicleToSubmit : Vehicle = {
+        vin: vin,
+        make: vehicleResponse.make,
+        model: vehicleResponse.model,
+        year: Number(vehicleResponse["model year"]),
+        mileage: 0,
+        license_plate: "",
+      };
+      setVehicle(vehicleToSubmit);
+      try {
+        setLoading(true);
+        await axios.post("http://localhost:8000/vehicles", {
+          ...vehicleToSubmit,
+          customer_id: parseInt(id),
+        });
+        setSubmissionSuccess(true);
+      } catch (err) {
+        console.error("Failed to submit vehicle", err);
+      } finally {
+        setLoading(false);
+      }
+
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch VIN data");
+    } finally {
+      setLoading(false);
+    }
+    axios
+      .get(`http://localhost:8000/customers/${id}`)
+      .then((res) => setCustomer(res.data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+    setShowVehicleForm(false);
+  } 
+
+  const createVehicle = async (vehicle: Vehicle, id: number) => {
+
+  }
+
+
+
   const handleVehicleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
 
-    try {
-      await axios.post("http://localhost:8000/vehicles", {
-        ...vehicle,
-        customer_id: parseInt(id),
-      });
-      setSubmissionSuccess(true);
-      setShowVehicleForm(false);
-      setVehicle({
-        vin: "",
-        make: "",
-        model: "",
-        year: new Date().getFullYear(),
-      });
-    } catch (err) {
-      console.error("Failed to submit vehicle", err);
-    }
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
@@ -96,9 +135,9 @@ export default function CustomerDetailPage() {
           </tr>
         </thead>
         <tbody>
-          {customer.vehicles.map((vehicle) => (
+          {customer && customer.vehicles.map((vehicle) => (
             <tr key={vehicle.vehicle_id} className="hover:bg-gray-50">
-              <td className="px-4 py-2 border"><Link to={`/decode:${vehicle.vehicle_id}`} className="text-blue-500 hover:underline">{vehicle.vin}</Link></td>
+              <td className="px-4 py-2 border"><Link to={`/vehicles/${vehicle.vehicle_id}`} className="text-blue-500 hover:underline">{vehicle.vin}</Link></td>
               <td className="px-4 py-2 border">{vehicle.year}</td>
               <td className="px-4 py-2 border">{vehicle.make}</td>
               <td className="px-4 py-2 border">{vehicle.model}</td>
@@ -108,67 +147,34 @@ export default function CustomerDetailPage() {
         ))}
       </tbody>
     </table>
-  <button
-    className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
-    onClick={() => setShowVehicleForm(!showVehicleForm)}
-  >
-    {showVehicleForm ? "Cancel" : "Add New Vehicle"}
-  </button>
-  {showVehicleForm && (
-    <form onSubmit={handleVehicleSubmit} className="space-y-4 bg-gray-100 p-4 rounded">
+    <button
+      className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+      onClick={() => setShowVehicleForm(!showVehicleForm)}
+    >
+      {showVehicleForm ? "Cancel" : "Add New Vehicle"}
+    </button>
+    {showVehicleForm && (
       <div>
-        <label className="block">VIN:</label>
         <input
-          type="text"
-          className="border p-2 w-full"
-          value={vehicle.vin}
-          onChange={(e) => setVehicle({ ...vehicle, vin: e.target.value })}
-          required
+          className="border p-2 rounded w-full mb-2"
+          placeholder="Enter VIN"
+          value={vin}
+          onChange={(e) => setVin(e.target.value)}
         />
-      </div>
-      <div>
-        <label className="block">Make:</label>
-        <input
-          type="text"
-          className="border p-2 w-full"
-          value={vehicle.make}
-          onChange={(e) => setVehicle({ ...vehicle, make: e.target.value })}
-          required
-        />
-      </div>
-      <div>
-        <label className="block">Model:</label>
-        <input
-          type="text"
-          className="border p-2 w-full"
-          value={vehicle.model}
-          onChange={(e) => setVehicle({ ...vehicle, model: e.target.value })}
-          required
-        />
-      </div>
-      <div>
-        <label className="block">Year:</label>
-        <input
-          type="number"
-          className="border p-2 w-full"
-          value={vehicle.year}
-          onChange={(e) => setVehicle({ ...vehicle, year: parseInt(e.target.value) })}
-          required
-        />
-      </div>
-      <button
-        type="submit"
-        className="bg-green-600 text-white px-4 py-2 rounded"
-      >
-        Submit Vehicle
-      </button>
-    </form>
-)}
+        <button
+          onClick={handleVinLookupSubmit}
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Decode
 
-{submissionSuccess && (
-  <div className="text-green-700 mt-4">Vehicle successfully added!</div>
-)}
-    </div>
-  );
+        </button>
+      </div>
+  )}
+
+    {submissionSuccess && (
+      <div className="text-green-700 mt-4">Vehicle successfully added!</div>
+    )}
+  </div>
+);
 }
 

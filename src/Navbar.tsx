@@ -17,16 +17,6 @@ export default function Navbar() {
               Customers
             </Link>
           </li>
-          <li>
-            <Link to="/repairs" className="hover:underline">
-              Repairs
-            </Link>
-          </li>
-          <li>
-            <Link to="/decode" className="hover:underline">
-              Decode VIN
-            </Link>
-          </li>
         </ul>
       </div>
     </nav>

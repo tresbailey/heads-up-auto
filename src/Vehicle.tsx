@@ -62,7 +62,9 @@ export default function VehicleDetailPage() {
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
   const [inspectionResult, setInspectionResult] = useState<InspectionResult | null>(null);
   const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([]);
-  const [laborOperations, setLaborOperations] = useState<LaborOperation[]>([]);
+    const [laborOperations, setLaborOperations] = useState<LaborOperation[]>([]);
+    const [showInspectionForm, setShowInspectionForm] = useState(true);
+    const [showEstimateForm, setShowEstimateForm] = useState(true);
 
     useEffect(() => {
         axios.get(`http://localhost:8000/vehicles/${id}`)
@@ -103,6 +105,12 @@ export default function VehicleDetailPage() {
 
       {activeTab === "inspections" && (
         <div>
+    <button
+      className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+      onClick={() => setShowInspectionForm(!showInspectionForm)}
+    >
+      {showInspectionForm ? "Cancel" : "Start Inspection"}
+    </button>
             {vehicle.inspections.map((inspection) => (
                 <div>
             <div className="mt-6">
@@ -137,6 +145,12 @@ export default function VehicleDetailPage() {
 
       {activeTab === "estimates" && (
           <div>
+    <button
+      className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+      onClick={() => setShowEstimateForm(!showEstimateForm)}
+    >
+      {showEstimateForm ? "Cancel" : "Start Estimate"}
+    </button>
               {vehicle.estimates.map((estimate) => (
                   <div>
             <div className="mt-6">
