@@ -1,3 +1,12 @@
+interface Customer {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  address: string;
+}
+
 interface Estimate {
     estimate_id: string;
     vehicle_id: string;
@@ -34,18 +43,21 @@ interface Vehicle {
     estimates: Estimate[];
 }
 
+interface Checklist {
+    checklist_id: number;
+    name: string;
+    description: string;
+}
+
 interface ChecklistItem {
     id: number;
     checklist_id: number;
+    name: string
     description: string;
+    order: number;
     status: string;
-}
-
-interface InspectionResult {
-    id: number;
-    inspection_id: number;
-    notes: string;
-    passed: boolean;
+    category: string;
+    is_required: boolean;
 }
 
 interface InspectionItem {
@@ -53,4 +65,18 @@ interface InspectionItem {
     condition: string;
     notes: string;
     image_url: string;
+}
+
+interface InspectionResult {
+    id: number;
+    inspection_id: number;
+    notes: string;
+    passed: boolean;
+    items: InspectionItem[];
+}
+
+interface InspectionChecklist {
+    name: string;
+    description: string;
+    items: ChecklistItem[];
 }

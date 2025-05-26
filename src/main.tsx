@@ -10,6 +10,7 @@ import CustomerDetailPage from "./Customer";
 import VehicleDetailPage from "./Vehicle";
 import InspectionPage from './InspectionPage';
 import DecodeVIN from "./DecodeVIN";
+import ChecklistBase from "./checklists/Checklist";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
@@ -24,6 +25,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 <Route path="/inspection" element={<InspectionPage />} />
                 <Route path="/repairs" element={<VehicleRepairSearch />} />
                 <Route path="/decode" element={<DecodeVIN />} />
+                <Route path="/checklists" element={<ChecklistBase />} />
             </Routes>
         </BrowserRouter>
     </React.StrictMode>

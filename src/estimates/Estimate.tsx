@@ -28,7 +28,6 @@ export default function EstimateEntry({ vehicle }) {
     const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
     const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([]);
     const [laborOperations, setLaborOperations] = useState<LaborOperation[]>([]);
-    const [showEstimateForm, setShowEstimateForm] = useState(false);
 
 
 

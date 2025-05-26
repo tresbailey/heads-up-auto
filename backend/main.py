@@ -8,12 +8,14 @@ from database import get_db
 from typing import List
 from routers.customers import router as customer_routes
 from routers.vehicles import vehicle_router
+from routers.checklists import checklist_router
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(customer_routes)
 app.include_router(vehicle_router)
+app.include_router(checklist_router)
 
 # Allow frontend origin
 ORIGINS = [
@@ -55,7 +57,7 @@ def create_labor_operation(operation: schemas.LaborOperationCreate, db: Session 
 def create_inspection(inspection: schemas.InspectionCreate, db: Session = Depends(get_db)):
     return crud.create_inspection(db, inspection)
 
-@app.get("/{inspection_id}", response_model=schemas.Inspection)
+@app.get("/inspections/{inspection_id}", response_model=schemas.Inspection)
 def read_inspection(inspection_id: int, db: Session = Depends(get_db)):
     db_inspection = crud.get_inspection(db, inspection_id)
     if db_inspection is None:
@@ -63,16 +65,6 @@ def read_inspection(inspection_id: int, db: Session = Depends(get_db)):
     return db_inspection
 
 # Checklist Routes
-@app.post("/checklists/", response_model=schemas.InspectionChecklist)
-def create_checklist(checklist: schemas.InspectionChecklistCreate, db: Session = Depends(get_db)):
-    return crud.create_checklist(db, checklist)
-
-@app.get("/checklists/{checklist_id}", response_model=schemas.InspectionChecklist)
-def read_checklist(checklist_id: int, db: Session = Depends(get_db)):
-    checklist = crud.get_checklist(db, checklist_id)
-    if checklist is None:
-        raise HTTPException(status_code=404, detail="Checklist not found")
-    return checklist
 
 # Checklist Item Routes
 @app.post("/items/", response_model=schemas.ChecklistItem)

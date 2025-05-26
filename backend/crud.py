@@ -77,6 +77,9 @@ def create_checklist(db: Session, checklist: schemas.InspectionChecklistCreate):
     db.refresh(db_checklist)
     return db_checklist
 
+def get_checklist_list(db: Session):
+    return db.query(models.InspectionChecklist).all()
+
 def get_checklist(db: Session, checklist_id: int):
     return db.query(models.InspectionChecklist).filter(models.InspectionChecklist.checklist_id == checklist_id).first()
 

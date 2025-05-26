@@ -88,7 +88,7 @@ class InspectionResult(InspectionResultBase):
         orm_mode = True
 
 class ChecklistItemBase(BaseModel):
-    item_description: str
+    description: str
     category: Optional[str] = None
     is_required: bool = True
 
@@ -110,7 +110,7 @@ class InspectionChecklistCreate(InspectionChecklistBase):
 
 class InspectionChecklist(InspectionChecklistBase):
     checklist_id: int
-    items: List[ChecklistItem] = []
+    # items: List[ChecklistItem] = []
 
     class Config:
         orm_mode = True

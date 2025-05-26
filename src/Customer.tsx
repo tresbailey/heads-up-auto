@@ -1,27 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Navbar from "./Navbar";
+import { Customer, Vehicle } from "./types";
 
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-
-interface Customer {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  address: string;
-}
-
-interface Vehicle {
-  vin: string;
-  make: string;
-  model: string;
-  year: number;
-  mileage: number;
-  license_plate: string;
-}
 
 export default function CustomerDetailPage() {
   const { id } = useParams();

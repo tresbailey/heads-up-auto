@@ -17,6 +17,11 @@ export default function Navbar() {
               Customers
             </Link>
           </li>
+          <li>
+            <Link to="/checklists" className="hover:underline">
+              Checklists
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
