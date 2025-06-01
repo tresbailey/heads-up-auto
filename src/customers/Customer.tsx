@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 import { Customer, Vehicle } from "./types";
+import VehicleEntry from "../vehicles/VehicleEntry";
+import VehicleCard from "../vehicles/VehicleCard";
 
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -79,11 +81,37 @@ export default function CustomerDetailPage() {
     setShowVehicleForm(false);
   } 
 
-  const createVehicle = async (vehicle: Vehicle, id: number) => {
+  const createVehicle = async (vehicle: Vehicle) => {
+      try {
+        setLoading(true);
+        await axios.post("http://localhost:8000/vehicles", {
+          ...vehicle,
+          customer_id: parseInt(id),
+        });
+        setSubmissionSuccess(true);
+      } catch (err) {
+        console.error("Failed to submit vehicle", err);
+      } finally {
+        setLoading(false);
+      }
+
 
   }
 
-
+    const updateVehicle = async (e) => {
+        e.preventDefault();
+        try {
+      const response = await axios.put(
+          `http://localhost:8000/vehicles/${vehicle.vehicle_id}`,{
+              ...vehicle,
+          customer_id: parseInt(id),
+          });
+        } catch (err: any) {
+            setError(err.messgae || "Could not save vehicle updates");
+        } finally {
+            setLoading(false);
+        }
+    }
 
   const handleVehicleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,30 +134,14 @@ export default function CustomerDetailPage() {
       <p>Address: {customer.address}, {customer.city}, {customer.state} {customer.zip_code}</p>
 
       <h2 className="text-xl font-semibold mt-6 mb-2">Vehicles</h2>
-      <table className="min-w-full bg-white border border-gray-200">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 border">VIN</th>
-            <th className="px-4 py-2 border">Year</th>
-            <th className="px-4 py-2 border">Make</th>
-            <th className="px-4 py-2 border">Model</th>
-            <th className="px-4 py-2 border">License</th>
-            <th className="px-4 py-2 border">Mileage</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="flex flex-col w-full overflow-x-scroll pb-10 hide-scroll-bar">
+          <div className="flex flex-nowrap">
           {customer && customer.vehicles.map((vehicle) => (
-            <tr key={vehicle.vehicle_id} className="hover:bg-gray-50">
-              <td className="px-4 py-2 border"><Link to={`/vehicles/${vehicle.vehicle_id}`} className="text-blue-500 hover:underline">{vehicle.vin}</Link></td>
-              <td className="px-4 py-2 border">{vehicle.year}</td>
-              <td className="px-4 py-2 border">{vehicle.make}</td>
-              <td className="px-4 py-2 border">{vehicle.model}</td>
-              <td className="px-4 py-2 border">{vehicle.license_plate}</td>
-              <td className="px-4 py-2 border">{vehicle.mileage}</td>
-            </tr>
-        ))}
-      </tbody>
-    </table>
+                  <VehicleCard vehicle={vehicle} setVehicle={setVehicle} updateVehicle={updateVehicle} />
+              ))}
+            <VehicleEntry vin={vin} setVin={setVin} setVehicle={createVehicle} vehicle={vehicle}/>
+            </div>
+        </div>
     <button
       className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
       onClick={() => setShowVehicleForm(!showVehicleForm)}
@@ -137,7 +149,7 @@ export default function CustomerDetailPage() {
       {showVehicleForm ? "Cancel" : "Add New Vehicle"}
     </button>
     {showVehicleForm && (
-      <div>
+        <div>
         <input
           className="border p-2 rounded w-full mb-2"
           placeholder="Enter VIN"

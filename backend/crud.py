@@ -21,6 +21,20 @@ def create_vehicle(db: Session, vehicle: schemas.VehicleCreate):
     db.refresh(db_vehicle)
     return db_vehicle
 
+
+def update_vehicle(db: Session, vehicle: schemas.VehicleUpdate):
+    db_vehicle = db.query(models.Vehicle).filter(models.Vehicle.vehicle_id == vehicle.vehicle_id).one_or_none()
+    if db_vehicle is None:
+        return None
+    # Update model class variable from requested fields
+    for var, value in vars(vehicle).items():
+        setattr(db_vehicle, var, value) if value else None
+    db.add(db_vehicle)
+    db.commit()
+    db.refresh(db_vehicle)
+    return db_vehicle
+
+
 def get_vehicle(db: Session, vehicle_id: int):
     vehicle = db.query(models.Vehicle).options(joinedload(models.Vehicle.estimates)).options(joinedload(models.Vehicle.inspections)).filter(models.Vehicle.vehicle_id == vehicle_id).first()
     return vehicle

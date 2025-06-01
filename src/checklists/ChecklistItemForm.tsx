@@ -33,15 +33,7 @@ export default function ChecklistItemForm( { checklist_id } ) {
   };
 
     return (
-        <div>
-          {!showForm && (
-              <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
-                  onClick={() => setShowForm(!showForm)}>
-                  {"New Item"}
-              </button>
-          )}
-    {showForm && (
-      <div>
+        <div className="">
             <h2 className="text-xl font-bold mb-4">Add Inspection Item</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -107,15 +99,7 @@ export default function ChecklistItemForm( { checklist_id } ) {
               <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 Submit
               </button>
-            <button
-        className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
-        onClick={() => setShowForm(!showForm)}
-    >
-        {"Cancel"}
-    </button>
             </form>
-        </div>
-)}
 </div>
   );
 }

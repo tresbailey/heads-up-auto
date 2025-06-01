@@ -58,6 +58,10 @@ class VehicleBase(BaseModel):
 class VehicleCreate(VehicleBase):
     customer_id: int
 
+class VehicleUpdate(VehicleBase):
+    vehicle_id: int
+    customer_id: int
+
 class CustomerBase(BaseModel):
     first_name: str
     last_name: str
@@ -88,7 +92,7 @@ class InspectionResult(InspectionResultBase):
         orm_mode = True
 
 class ChecklistItemBase(BaseModel):
-    description: str
+    description: Optional[str]
     category: Optional[str] = None
     is_required: bool = True
 
@@ -110,7 +114,7 @@ class InspectionChecklistCreate(InspectionChecklistBase):
 
 class InspectionChecklist(InspectionChecklistBase):
     checklist_id: int
-    # items: List[ChecklistItem] = []
+    items: Optional[List[ChecklistItem]] = []
 
     class Config:
         orm_mode = True

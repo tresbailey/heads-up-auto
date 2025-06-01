@@ -11,6 +11,11 @@ vehicle_router = APIRouter()
 def create_vehicle(vehicle: schemas.VehicleCreate, db: Session = Depends(get_db)):
     return crud.create_vehicle(db, vehicle)
 
+@vehicle_router.put("/vehicles/{vehicle_id}", response_model=schemas.Vehicle)
+def update_vehicle(vehicle_id: int, vehicle: schemas.VehicleUpdate, db: Session = Depends(get_db)):
+    vehicle.vehicle_id = vehicle_id
+    return crud.update_vehicle(db, vehicle)
+
 @vehicle_router.get("/vehicles/{vehicle_id}", response_model=schemas.Vehicle)
 def read_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
     db_vehicle = crud.get_vehicle(db, vehicle_id)

@@ -42,21 +42,22 @@ export default function ChecklistItemModal( { checklist } ) {
             setLoading(false);
         }
     setIsOpen(false);
-  };
+    };
+
 
   return (
     <div>
-      <a href="#" onClick={(e) => { e.preventDefault(); setIsOpen(true); }} className="text-blue-600 underline">
-          View / Modify
-      </a>
+              <button onClick={(e) => { e.preventDefault(); setIsOpen(true); }} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Add Items
+      </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 w-full py-9 h-half">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 relative">
             <button onClick={() => setIsOpen(false)} className="absolute top-2 right-2 text-gray-600 hover:text-red-600">
               &times;
             </button>
-        <ChecklistItemForm checklist_id={checklist.checklist_id} />
+            <ChecklistItemForm checklist_id={checklist.checklist_id} />
         </div>
         </div>
       )}

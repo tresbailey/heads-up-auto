@@ -102,7 +102,7 @@ class ChecklistItem(Base):
 
     item_id = Column(Integer, primary_key=True, index=True)
     checklist_id = Column(Integer, ForeignKey("inspection_checklists.checklist_id"), nullable=False)
-    item_description = Column(String, nullable=False)
+    description = Column(String, nullable=False)
     category = Column(String)
     is_required = Column(Boolean, default=True)
 
